@@ -1,0 +1,92 @@
+#!/bin/bash
+
+ROWS=(5 6 13 26)
+COLS=(25 12 16 20)
+# substituted the "S" character for # to avoid comment confusion
+KEYS=("1" "2" "3" "A" "4" "5" "6" "B" "7" "8" "9" "C" "*" "0" "S" "D")
+
+# Setup: All Rows HIGH, All Cols Input/Pull-Down
+for r in "${ROWS[@]}"; do pinctrl set $r op dh; done
+for c in "${COLS[@]}"; do pinctrl set $c ip pd; done
+
+LED_PIN=17
+pinctrl set $LED_PIN op dl  # LED starts OFF (Drive Low)
+
+echo "📻 Bose Radio: Smooth Audio Mode Active..."
+
+while true; do
+  # 1. FAST CHECK: Are ANY columns high?
+  # This single check is very quiet for the CPU.
+  ANY_KEY=false
+  for j in "${!COLS[@]}"; do
+    if [[ $(pinctrl get ${COLS[$j]}) == *"| hi"* ]]; then
+      ANY_KEY=true
+      COL_FOUND=$j
+      break
+    fi
+  done
+
+  # 2. If a key is detected, identify it
+  if [ "$ANY_KEY" = true ]; then
+    # Momentarily turn off rows to find the specific one
+    for r in "${ROWS[@]}"; do pinctrl set $r op dl; done
+    
+    for i in "${!ROWS[@]}"; do
+      pinctrl set ${ROWS[$i]} dh
+      sleep 0.01 # Small soak
+      if [[ $(pinctrl get ${COLS[$COL_FOUND]}) == *"| hi"* ]]; then
+        PRESSED_KEY=${KEYS[$((i * 4 + COL_FOUND))]}
+        echo "✅ Key: $PRESSED_KEY"
+        
+        case $PRESSED_KEY in
+          1) mpc stop; mpc clear; mpc load radio; mpc play ;;
+          2) mpc play 2 ;;
+          3) mpc play 3 ;;
+          4) mpc play 4 ;;
+          5) mpc play 5 ;;
+          6) mpc play 6 ;;
+          7) mpc play 7 ;;
+          8) mpc play 8 ;;
+          9) mpc play 9 ;;
+          0) mpc toggle
+             # Check if we are now paused
+             STATUS=$(mpc status)
+             if [[ "$STATUS" == *"[paused]"* ]]; then
+               pinctrl set $LED_PIN dh  # Light ON
+             else
+               pinctrl set $LED_PIN dl  # Light OFF
+             fi
+             ;;
+          # 0) mpc toggle & echo Pause/Play;;
+          S) mpc stop; mpc clear; mpc load radio; mpc play ;;
+          A) mpc volume +5 & echo Volume Up;;
+          B) mpc volume -5 & echo Volume Down;;
+          C) mpc next & echo Next;;
+          D) mpc previous & echo Previous;;
+          *) mpc stop; mpc clear; mpc load jewish; mpc play ;;
+          #*) mpc stop; mpc clear; mpc add /; mpc play & echo Playing Local;;
+          # D) exit 0 ;;
+        esac
+        
+        # Wait for release
+        while [[ $(pinctrl get ${COLS[$COL_FOUND]}) == *"| hi"* ]]; do sleep 0.1; done
+        break
+      fi
+      pinctrl set ${ROWS[$i]} dl
+    done
+    
+    # Reset rows to HIGH for the next fast-scan
+    for r in "${ROWS[@]}"; do pinctrl set $r op dh; done
+  fi
+  # Sync LED with actual MPD state (untested code)
+  # to allow for future external control.
+  
+    if mpc status | grep -q "\[paused\]"; then
+        pinctrl set $LED_PIN dh
+      else
+        pinctrl set $LED_PIN dl
+      fi
+  # 3. THE BREATHER: This longer sleep stops the stuttering
+  # 100ms is imperceptible for a button press but huge for audio stability
+  sleep 0.1
+done
