@@ -1,0 +1,33 @@
+[Unit]
+Description=Keypad MPD Client Script
+# Tells systemd that this service requires the mpd.service to be active
+Requires=mpd.service
+# Ensures that mpd.service is started before this service
+After=mpd.service
+
+---
+
+[Service]
+# IMPORTANT: Use the dedicated user you run the script as
+User=harry
+Group=harry
+
+# new version using bash script
+ExecStart=/home/harry/bashradio
+WorkingDirectory=/home/harry/
+
+# old version using Python
+# The full path to the Python interpreter inside your VENV
+# ExecStart=/home/harry/player/venv/bin/python /home/harry/player/radio.py
+
+# The working directory where the script is located
+# WorkingDirectory=/home/harry/player/
+
+# Restart the service if it ever fails or crashes
+Restart=always
+RestartSec=10
+
+---
+
+[Install]
+WantedBy=multi-user.target

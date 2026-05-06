@@ -1,0 +1,16 @@
+#EXTM3U
+#EXTINF:0,JewishMusicStream
+https://stream.jewishmusicstream.com:8000/;
+#EXTINF:0,Jewish Radio Network
+https://stream.jewishradionetwork.com:8000/;
+#EXTINF:0,Chabad
+http://stream.radio.co/sdfd68a101/listen
+#EXTINF:0,Jewish Rock
+https://d1yoq0kkuyzrcx.cloudfront.net/1ca8b1dd-c292-44ac-9ff1-663451753e10
+#EXTINF:0,New York Jewish Radio
+http://us2.streamingpulse.com:9016/
+#EXTINF:0,Radio-J
+https://stream.rcs.revma.com/138w9xn95tuvv
+#EXTINF:0,JBS Jewish Broadcasting Service
+http://broadcast.shoutcheap.com:8444/stream
+

@@ -1,0 +1,19 @@
+#EXTM3U
+#EXTINF:0,WQXR Classical
+http://stream.wqxr.org/wqxr-tunein
+#EXTINF:0,WETA Classical
+https://weta.streamguys1.com/wetaclassical-icy?nocache=q8vyV_iE
+#EXTINF:0,WKZE
+https://wkze.streamguys1.com/WKZE
+#EXTINF:0,WNYC New York Public Radio
+http://fm939.wnyc.org/wnycfm-web
+#EXTINF:0,WAMC Albany
+http://playerservices.streamtheworld.com/api/livestream-redirect/WAMCFM.mp3
+#EXTINF:0,WJFF Radio Catskill
+http://live2.rcast.net:8968/
+#EXTINF:0,WVKR Vasser
+https://playerservices.streamtheworld.com/api/livestream-redirect/WVKRFM.mp3
+#EXTINF:0,WFMU Freeform
+https://stream2.wfmu.org/freeform-high.aac
+#EXTINF:0,WTMD Baltimore
+https://wtmd-ice.streamguys1.com/hd2.mp3
